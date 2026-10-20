@@ -57,6 +57,7 @@ import co.sena.syncpos.ui.theme.DarkSlate
 import co.sena.syncpos.ui.theme.SenaGreen
 import co.sena.syncpos.ui.theme.SurfaceWhite
 import co.sena.syncpos.ui.theme.TextSecondary
+import androidx.compose.ui.platform.LocalFocusManager
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
@@ -75,6 +76,11 @@ fun PosScreen(
     // remember: guarda un objeto entre redibujados. Sin remember, el SnackbarHostState se
     // crearia de nuevo cada vez que Compose redibuja y se perderian los mensajes.
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // focusManager: controla que campo tiene el "foco" (donde escribe el teclado).
+    // Al quitar el foco del buscador, Android cierra el teclado y vuelve a verse la
+    // barra de cobro de abajo, que el teclado tapaba.
+    val focusManager = LocalFocusManager.current
 
     // Escucha los mensajes del ViewModel y los muestra como Snackbar.
     LaunchedEffect(Unit) {
@@ -137,7 +143,13 @@ fun PosScreen(
 
             // Resultados de la busqueda (key = id para que Compose identifique cada fila)
             items(state.searchResults, key = { "result-${it.id}" }) { product ->
-                ProductResultRow(product = product, onClick = { viewModel.addProduct(product) })
+                ProductResultRow(
+                    product = product,
+                    onClick = {
+                        viewModel.addProduct(product)
+                        focusManager.clearFocus() // cierra el teclado tras elegir el producto
+                    }
+                )
             }
 
             if (state.query.isNotBlank() && state.searchResults.isEmpty()) {

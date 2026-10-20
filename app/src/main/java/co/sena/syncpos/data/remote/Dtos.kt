@@ -62,6 +62,9 @@ data class SyncSaleDto(
     @SerialName("offline_referencia") val offlineReference: String,
     @SerialName("metodo_pago") val paymentMethod: String,
     @SerialName("vendida_en") val soldAt: String,
+    // "online": la venta se envio apenas se registro (habia internet).
+    // "offline": la venta espero en el celular y se envio despues, al volver la conexion.
+    @SerialName("origen") val origin: String,
     val items: List<SyncItemDto>
 )
 

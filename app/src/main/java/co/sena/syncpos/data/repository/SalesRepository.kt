@@ -87,12 +87,16 @@ class SalesRepository(
             cart.items.forEach { productDao.decrementStock(it.productId, it.quantity) }
         }
 
-        syncPending()
+        // Se avisa cual es la venta recien hecha: si este envio funciona, el servidor la
+        // guarda como "online". Si falla, queda pendiente y luego viajara como "offline".
+        syncPending(justRegisteredReference = reference)
         return saleDao.getStatus(reference) ?: SaleStatus.PENDIENTE
     }
 
     // Envia TODAS las ventas pendientes al servidor y actualiza sus estados.
-    suspend fun syncPending(): SyncSummary = syncMutex.withLock {
+    // justRegisteredReference: referencia de la venta que se acaba de registrar (o null
+    // cuando la sincronizacion la lanza el boton o la reconexion automatica).
+    suspend fun syncPending(justRegisteredReference: String? = null): SyncSummary = syncMutex.withLock {
         val pending = saleDao.getPending()
         if (pending.isEmpty()) return@withLock SyncSummary(nothingToSync = true)
 
@@ -102,7 +106,9 @@ class SalesRepository(
 
         try {
             for (chunk in pending.chunked(chunkSize)) {
-                val response = api.syncSales(SyncRequest(chunk.map { it.toDto() }))
+                val response = api.syncSales(
+                    SyncRequest(chunk.map { it.toDto(isOnline = it.sale.offlineReference == justRegisteredReference) })
+                )
 
                 // Funcion pura (probada en tests) que traduce la respuesta a estados locales.
                 for (update in mapSyncResults(response.resultados)) {
@@ -132,7 +138,7 @@ class SalesRepository(
 
     // Convierte una venta local al formato JSON que espera la API.
     // Solo se envia producto_id y cantidad; los precios los pone el servidor.
-    private fun SaleWithItems.toDto(): SyncSaleDto {
+    private fun SaleWithItems.toDto(isOnline: Boolean): SyncSaleDto {
         // Fecha ISO-8601 con zona horaria, ej: 2026-10-20T10:42:00-05:00
         val soldAtText = OffsetDateTime
             .ofInstant(Instant.ofEpochMilli(sale.soldAt), ZoneId.systemDefault())
@@ -142,6 +148,7 @@ class SalesRepository(
             offlineReference = sale.offlineReference,
             paymentMethod = sale.paymentMethod,
             soldAt = soldAtText,
+            origin = if (isOnline) "online" else "offline",
             items = items.map { SyncItemDto(it.productId, it.quantity) }
         )
     }

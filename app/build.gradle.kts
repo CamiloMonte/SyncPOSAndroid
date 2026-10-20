@@ -70,7 +70,6 @@ dependencies {
 
     // Corrutinas
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.coroutines.play.services) // permite usar .await() con tareas de Google
 
     // Escaner de codigos de barras de Google (no necesita permiso de camara)
     implementation(libs.play.services.code.scanner)

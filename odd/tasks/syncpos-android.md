@@ -26,12 +26,12 @@ The offline-first sales flow is the project's key differentiator: sales must nev
 - Auto sync when connectivity returns + manual "Forzar Sincronización Ahora".
 
 ## Tasks
-- [ ] T1 Scaffold project, version catalog, SENA theme, navigation; `assembleDebug` passes (delegated writer)
-- [ ] T2 Data layer: Retrofit API, Room (productos, ventas locales + items), session, connectivity, repository (delegated writer)
-- [ ] T3 Login + catalog download (delegated writer)
-- [ ] T4 POS screen: search, scanner, cart, payment, register sale online/offline (delegated writer)
-- [ ] T5 History + sync screen, auto sync on reconnect (delegated writer)
-- [ ] T6 Unit tests (cart math, sync result handling) + README; build + tests + emulator smoke test (writer + parent)
+- [x] T1 Scaffold project, version catalog, SENA theme, navigation; `assembleDebug` passes (delegated writer)
+- [x] T2 Data layer: Retrofit API, Room (productos, ventas locales + items), session, connectivity, repository (delegated writer)
+- [x] T3 Login + catalog download (delegated writer)
+- [x] T4 POS screen: search, scanner, cart, payment, register sale online/offline (delegated writer)
+- [x] T5 History + sync screen, auto sync on reconnect (delegated writer)
+- [x] T6 Unit tests (cart math, sync result handling) + README; build + tests done by writer; emulator smoke test pending (parent)
 
 ## Acceptance criteria
 - `gradlew assembleDebug` and `gradlew testDebugUnitTest` pass.
@@ -43,6 +43,9 @@ The offline-first sales flow is the project's key differentiator: sales must nev
 
 ## Progress
 - 2026-10-20: Environment verified, versions resolved, plan created.
+- 2026-10-20: T1-T6 implemented by the writer. Observed: `./gradlew assembleDebug` BUILD SUCCESSFUL (app/build/outputs/apk/debug/app-debug.apk); `./gradlew testDebugUnitTest` 19 tests, 0 failures (CartTest 7, MoneyTest 6, SyncMappingTest 6); no accents in code comments (rg check empty). Commits: one per task (T1 scaffold, T2 data, T3 auth, T4 pos, T5 history; T6 tests+README+this doc). Emulator run NOT done (parent).
+- Versions used: AGP 9.4.1, Gradle 9.8.2, Kotlin/Compose/serialization plugins 2.4.21, KSP 2.3.12, Room 2.8.5, Compose BOM 2026.09.00, activity-compose 1.13.0, lifecycle 2.11.0, navigation-compose 2.10.2, Retrofit 3.0.0, OkHttp 5.5.0, kotlinx-serialization 1.12.0, coroutines 1.11.0, code-scanner 16.1.0, material-icons-extended 1.7.8. compileSdk/targetSdk 37, minSdk 26.
+- Design notes: sale statuses flow PENDIENTE -> SINCRONIZADA/RECHAZADA; unknown server `estado` is ignored (sale stays pending); Cart is immutable and has no stock limit (server flags negative stock); stepper minimum is 1 (trash removes); if catalog download fails after login but Room has an old catalog, the app continues with it.
 
 ## Next step
-T1-T6 via one delegated writer; parent verifies build, tests and an emulator run against the e2e Laravel API.
+Parent: run the app on the emulator against the e2e Laravel API (login, catalog download, online sale, offline sale + auto sync, duplicate re-send, history), then fix any UI/visual deviations from the Figma.

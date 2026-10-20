@@ -1,17 +1,14 @@
 package co.sena.syncpos.ui.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import co.sena.syncpos.SyncPosApp
+import co.sena.syncpos.ui.history.HistoryScreen
 import co.sena.syncpos.ui.login.LoginScreen
+import co.sena.syncpos.ui.pos.PosScreen
 
 // Las 3 rutas (pantallas) de la app. Una ruta es solo un texto que identifica la pantalla.
 object Routes {
@@ -44,15 +41,23 @@ fun AppNavigation() {
                 }
             )
         }
-        composable(Routes.POS) { Placeholder("Punto de Venta") }
-        composable(Routes.HISTORY) { Placeholder("Historial") }
-    }
-}
-
-// Pantalla temporal; se reemplaza en las siguientes tareas.
-@Composable
-private fun Placeholder(title: String) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = title)
+        composable(Routes.POS) {
+            PosScreen(
+                container = container,
+                onOpenHistory = { navController.navigate(Routes.HISTORY) },
+                onLoggedOut = {
+                    navController.navigate(Routes.LOGIN) {
+                        // Vacia la pila: desde el login "atras" no regresa al POS.
+                        popUpTo(Routes.POS) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Routes.HISTORY) {
+            HistoryScreen(
+                container = container,
+                onBack = { navController.popBackStack() } // vuelve a la pantalla anterior (POS)
+            )
+        }
     }
 }

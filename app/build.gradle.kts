@@ -19,9 +19,16 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
-        // URL base de la API Laravel. 10.0.2.2 es la direccion con la que el emulador
-        // de Android "ve" el localhost del computador donde corre el servidor.
-        buildConfigField("String", "API_URL", "\"http://10.0.2.2:8000/api/\"")
+        // URL base de la API Laravel en desarrollo.
+        // Se usa 127.0.0.1 (el propio celular) junto con el comando:
+        //     adb reverse tcp:8000 tcp:8000
+        // que redirige el puerto 8000 del celular al puerto 8000 del computador.
+        // Por que no 10.0.2.2: desde Android 17 (API 37) las apps tienen bloqueado por
+        // defecto el acceso a la "red local" y 10.0.2.2 es una direccion local, asi que
+        // haria falta pedir el permiso ACCESS_LOCAL_NETWORK, que en produccion no tiene
+        // sentido (alli la API estara en internet con https). adb reverse ademas sirve
+        // igual para el emulador y para un celular fisico conectado por USB.
+        buildConfigField("String", "API_URL", "\"http://127.0.0.1:8000/api/\"")
     }
 
     buildTypes {

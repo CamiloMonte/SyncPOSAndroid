@@ -1,7 +1,6 @@
 package co.sena.syncpos.ui.admin
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -24,12 +23,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.sena.syncpos.AppContainer
 import co.sena.syncpos.ui.admin.dashboard.DashboardScreen
 import co.sena.syncpos.ui.admin.inventory.InventoryScreen
 import co.sena.syncpos.ui.admin.reports.ReportsScreen
+import co.sena.syncpos.ui.admin.sales.SalesScreen
 import co.sena.syncpos.ui.theme.BackgroundGray
 import co.sena.syncpos.ui.theme.BorderGray
 import co.sena.syncpos.ui.theme.SenaGreen
@@ -132,20 +131,8 @@ fun AdminShell(
                     onEditProduct = onEditProduct
                 )
                 AdminTab.REPORTS -> ReportsScreen(container, isOnline, logout)
-                AdminTab.SALES -> PlaceholderTab("Ventas", isOnline, logout)
+                AdminTab.SALES -> SalesScreen(container, isOnline, logout)
             }
-        }
-    }
-}
-
-// Contenido temporal de cada pestana (se reemplaza por la pantalla real en las
-// siguientes tareas).
-@Composable
-private fun PlaceholderTab(title: String, isOnline: Boolean, onLogout: () -> Unit) {
-    androidx.compose.foundation.layout.Column(modifier = Modifier.fillMaxSize()) {
-        AdminTopBar(title = title, subtitle = "Próximamente", isOnline = isOnline, onLogout = onLogout)
-        Box(modifier = Modifier.fillMaxSize().padding(PaddingValues(16.dp))) {
-            Text("En construcción")
         }
     }
 }

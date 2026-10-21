@@ -445,7 +445,7 @@ class FakeSyncPosApi(
     private fun percentage(part: Double, whole: Double): Double =
         if (whole == 0.0) 0.0 else Math.round(part / whole * 1000.0) / 10.0
 
-    // Minusculas y sin tildes, para que "cafe" encuentre "Café".
+    // Minusculas y sin tildes, para que "cafe" encuentre "Cafe" con tilde.
     private fun normalize(text: String): String =
         Normalizer.normalize(text, Normalizer.Form.NFD)
             .replace(Regex("\\p{Mn}+"), "")

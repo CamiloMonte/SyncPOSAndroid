@@ -19,8 +19,9 @@ Punto de venta móvil para el cajero, con ventas sin conexión que se sincroniza
 Por línea de comandos (Windows, con el JDK de Android Studio):
 
 ```
-./gradlew assembleDebug
-./gradlew testDebugUnitTest
+./gradlew assembleFullDebug   # app real (API Laravel)
+./gradlew assembleDemoDebug   # versión demo (sin servidor)
+./gradlew testFullDebugUnitTest testDemoDebugUnitTest
 ```
 
 ## Arquitectura (MVVM simple)
@@ -60,3 +61,17 @@ Barra inferior con 4 pestañas (`ui/admin/`):
 | Ventas | Historial de todas las ventas con búsqueda (N° de factura o cajero), filtro por método de pago, paginación y hoja inferior "Detalle de Factura" con opción de compartir como texto. |
 
 Archivos nuevos por capa: `data/remote/AdminDtos.kt` y `MoneySerializer.kt` (el dinero llega como número o como texto), `data/repository/AdminRepository.kt` (errores de red, 401, 403 y 422 ya traducidos), `domain/` (rango de fechas, CSV, factura, ganancia del producto) y una carpeta por pestaña en `ui/admin/`.
+
+## Versión demo (sin servidor)
+
+Hay dos *product flavors* (`mode`): **full** (la app real, habla con la API Laravel) y **demo** (`applicationId` `co.sena.syncpos.demo`, nombre "SyncPOS Demo"). Se instalan lado a lado en el mismo celular.
+
+**Cómo ejecutarla en Android Studio:** abre el panel *Build Variants* (menú *View > Tool Windows > Build Variants*), en el módulo `app` elige **`demoDebug`** y pulsa *Run*. Por línea de comandos: `./gradlew assembleDemoDebug` (APK en `app/build/outputs/apk/demo/debug/app-demo-debug.apk`). No hace falta Laravel ni `adb reverse`.
+
+**Qué muestra:** la pantalla de login trae dos botones, *Entrar como Administrador* y *Entrar como Cajero*, que hacen el login normal (misma navegación por rol). Todas las pantallas reales funcionan con datos de ejemplo de una tienda colombiana: 10 productos en 8 categorías, 25 ventas de los últimos 7 días de dos cajeros (Laura Gómez y Carlos Pérez) y el administrador Andrés Díaz. Dashboard, Inventario (crear, editar, activar/desactivar y errores 422), Reportes (CSV/PDF), Historial y el punto de venta del cajero funcionan; una venta nueva descuenta stock y aparece en el historial.
+
+**Cómo está hecho:** solo cambia la capa de red. `src/demo/.../FakeSyncPosApi.kt` implementa la misma interfaz `SyncPosApi` con datos en memoria, y `provideSyncPosApi()` (una copia en `src/full` y otra en `src/demo`) decide cuál usar. Repositorios, Room, ViewModels y pantallas son el mismo código. `BuildConfig.DEMO` solo activa los botones del login.
+
+**Modo avión:** la API falsa lanza `IOException` cuando el celular no tiene red, así que se ve el flujo real: la venta del cajero queda *pendiente* y se sincroniza sola al volver la conexión. El login y la descarga del catálogo funcionan sin red para poder abrir la demo sin Wi-Fi.
+
+**Límites:** los datos del "servidor" viven solo en memoria (se reinician al cerrar el proceso); Room sí guarda las ventas locales del cajero como siempre. Cualquier contraseña sirve; `admin@syncpos.co` es administrador, `cajero@syncpos.co` y `carlos@syncpos.co` son cajeros.

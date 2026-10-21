@@ -42,6 +42,15 @@ class LoginViewModel(
 
     fun onPasswordChange(value: String) = _uiState.update { it.copy(password = value, error = null) }
 
+    // Solo lo usan los botones de la version demo: rellena el correo (con una clave
+    // cualquiera, la API falsa acepta todas) y ejecuta el login normal. Asi la
+    // navegacion por rol es exactamente la misma que con el formulario.
+    fun loginAs(email: String) {
+        if (_uiState.value.isLoading) return
+        _uiState.update { it.copy(email = email, password = "demo", error = null) }
+        login()
+    }
+
     fun login() {
         val current = _uiState.value
         if (current.isLoading) return

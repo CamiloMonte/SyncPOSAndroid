@@ -40,7 +40,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.material3.OutlinedButton
 import co.sena.syncpos.AppContainer
+import co.sena.syncpos.BuildConfig
 import co.sena.syncpos.ui.components.PrimaryButton
 import co.sena.syncpos.ui.theme.BorderGray
 import co.sena.syncpos.ui.theme.DangerRed
@@ -72,7 +74,8 @@ fun LoginScreen(container: AppContainer, onLoggedIn: () -> Unit) {
         state = state,
         onEmailChange = viewModel::onEmailChange,
         onPasswordChange = viewModel::onPasswordChange,
-        onLogin = viewModel::login
+        onLogin = viewModel::login,
+        onDemoLogin = viewModel::loginAs
     )
 }
 
@@ -81,7 +84,8 @@ private fun LoginContent(
     state: LoginUiState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onLogin: () -> Unit
+    onLogin: () -> Unit,
+    onDemoLogin: (String) -> Unit
 ) {
     // Modifier = lista de "ajustes" que se encadenan (tamano, margen, fondo, clic...).
     Box(
@@ -181,6 +185,39 @@ private fun LoginContent(
                     style = MaterialTheme.typography.labelSmall,
                     color = OnlineText
                 )
+            }
+
+            // BuildConfig.DEMO es una constante generada por Gradle (true solo en el flavor
+            // demo). Como es constante, el flavor full nunca muestra este bloque.
+            if (BuildConfig.DEMO) {
+                Spacer(Modifier.height(12.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(SenaGreenSoft, RoundedCornerShape(12.dp))
+                        .padding(14.dp)
+                ) {
+                    Text(
+                        text = "Versión de demostración: los datos son de ejemplo y no se conecta a ningún servidor.",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = OnlineText
+                    )
+                }
+                Spacer(Modifier.height(12.dp))
+                // Cada boton hace el login normal con el correo del rol correspondiente.
+                OutlinedButton(
+                    onClick = { onDemoLogin("admin@syncpos.co") },
+                    enabled = !state.isLoading,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) { Text("Entrar como Administrador", color = SenaGreen) }
+                Spacer(Modifier.height(8.dp))
+                OutlinedButton(
+                    onClick = { onDemoLogin("cajero@syncpos.co") },
+                    enabled = !state.isLoading,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) { Text("Entrar como Cajero", color = SenaGreen) }
             }
 
             Spacer(Modifier.height(32.dp))

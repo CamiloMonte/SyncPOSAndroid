@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.sena.syncpos.AppContainer
+import co.sena.syncpos.ui.admin.dashboard.DashboardScreen
 import co.sena.syncpos.ui.theme.BackgroundGray
 import co.sena.syncpos.ui.theme.BorderGray
 import co.sena.syncpos.ui.theme.SenaGreen
@@ -110,7 +111,16 @@ fun AdminShell(
         // innerPadding ya incluye la altura de la barra inferior: se aplica al contenido.
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (selectedTab) {
-                AdminTab.HOME -> PlaceholderTab("Inicio", isOnline, logout)
+                AdminTab.HOME -> DashboardScreen(
+                    container = container,
+                    isOnline = isOnline,
+                    onLogout = logout,
+                    onOpenLowStock = {
+                        lowStockRequest++ // el inventario aplica el filtro al ver este cambio
+                        selectedIndex = AdminTab.INVENTORY.ordinal
+                    },
+                    onOpenSales = { selectedIndex = AdminTab.SALES.ordinal }
+                )
                 AdminTab.INVENTORY -> PlaceholderTab("Inventario", isOnline, logout)
                 AdminTab.REPORTS -> PlaceholderTab("Reportes", isOnline, logout)
                 AdminTab.SALES -> PlaceholderTab("Ventas", isOnline, logout)

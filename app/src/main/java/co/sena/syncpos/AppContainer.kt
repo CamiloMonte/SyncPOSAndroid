@@ -3,7 +3,7 @@ package co.sena.syncpos
 import android.content.Context
 import co.sena.syncpos.data.connectivity.ConnectivityObserver
 import co.sena.syncpos.data.local.AppDatabase
-import co.sena.syncpos.data.remote.ApiClient
+import co.sena.syncpos.data.remote.provideSyncPosApi
 import co.sena.syncpos.data.repository.AdminRepository
 import co.sena.syncpos.data.repository.AuthRepository
 import co.sena.syncpos.data.repository.ProductRepository
@@ -28,7 +28,13 @@ class AppContainer(context: Context) {
     val sessionEvents = SessionEvents()
 
     private val database: AppDatabase by lazy { AppDatabase.create(context) }
-    private val api by lazy { ApiClient.create(session) }
+    // Inversion de dependencias, explicado simple: el resto de la app solo conoce la
+    // INTERFAZ SyncPosApi ("que se puede pedir"), no QUIEN la implementa. Quien la
+    // implementa se decide aqui, en un solo lugar:
+    // provideSyncPosApi() existe dos veces, una en la carpeta src/full (devuelve el
+    // cliente Retrofit real) y otra en src/demo (devuelve una API falsa en memoria).
+    // Gradle compila solo la carpeta del flavor elegido, asi el flavor full queda igual.
+    private val api by lazy { provideSyncPosApi(session, connectivity) }
 
     val authRepository by lazy { AuthRepository(api, session) }
     val productRepository by lazy { ProductRepository(api, database.productDao()) }

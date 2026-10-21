@@ -31,6 +31,39 @@ android {
         buildConfigField("String", "API_URL", "\"http://127.0.0.1:8000/api/\"")
     }
 
+    // ---------- Product flavors (sabores del producto) ----------
+    // Un "flavor" es una VARIANTE de la misma app que se compila a partir del mismo codigo.
+    // Aqui hay dos, dentro de una misma "dimension" llamada "mode":
+    //   - full: la app real, que habla con la API Laravel. No cambia nada respecto a antes.
+    //   - demo: la app de demostracion, con datos de ejemplo en memoria y sin servidor.
+    // Gradle combina flavor + buildType y crea variantes: fullDebug, fullRelease,
+    // demoDebug y demoRelease (en Android Studio se eligen en el panel "Build Variants").
+    //
+    // Cada flavor puede tener su propia carpeta de codigo ("source set"):
+    //   app/src/main  -> codigo comun a todos los flavors
+    //   app/src/full  -> solo se compila en el flavor full
+    //   app/src/demo  -> solo se compila en el flavor demo
+    flavorDimensions += "mode"
+    productFlavors {
+        create("full") {
+            dimension = "mode"
+            // resValue crea un recurso de texto; el manifiesto lo usa como nombre de la app
+            // con android:label="@string/app_name".
+            resValue("string", "app_name", "SyncPOS")
+            // BuildConfig.DEMO es una constante que el codigo puede consultar: false = app real.
+            buildConfigField("boolean", "DEMO", "false")
+        }
+        create("demo") {
+            dimension = "mode"
+            // Otro applicationId: Android lo ve como OTRA app, asi que full y demo se
+            // pueden instalar al mismo tiempo en el mismo celular.
+            applicationIdSuffix = ".demo"
+            versionNameSuffix = "-demo"
+            resValue("string", "app_name", "SyncPOS Demo")
+            buildConfigField("boolean", "DEMO", "true")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -44,7 +77,8 @@ android {
 
     buildFeatures {
         compose = true
-        buildConfig = true // necesario para usar BuildConfig.API_URL
+        buildConfig = true // necesario para usar BuildConfig.API_URL y BuildConfig.DEMO
+        resValues = true   // necesario para que los flavors definan @string/app_name
     }
 }
 

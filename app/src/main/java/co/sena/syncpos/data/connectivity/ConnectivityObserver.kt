@@ -44,7 +44,8 @@ class ConnectivityObserver(context: Context) {
         awaitClose { manager.unregisterNetworkCallback(callback) }
     }.distinctUntilChanged() // no repetir el mismo valor dos veces seguidas
 
-    private fun currentlyOnline(): Boolean {
+    // Publica para que la API de demostracion pueda preguntar "hay red ahora mismo?".
+    fun currentlyOnline(): Boolean {
         val caps = manager.getNetworkCapabilities(manager.activeNetwork) ?: return false
         return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }

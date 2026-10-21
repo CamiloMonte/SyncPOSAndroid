@@ -1,6 +1,10 @@
 package co.sena.syncpos.ui.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import co.sena.syncpos.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +23,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -98,20 +101,16 @@ private fun LoginContent(
         ) {
             Spacer(Modifier.height(32.dp))
 
-            // Logo: cuadro verde con esquinas redondeadas y un icono de base de datos.
-            Box(
+            // Logo de SyncPOS. painterResource carga una imagen de la carpeta res/drawable;
+            // R.drawable.syncpos_icon es el nombre que Android genera para syncpos_icon.png.
+            // clip recorta la imagen con esquinas redondeadas, como un icono de app.
+            Image(
+                painter = painterResource(R.drawable.syncpos_icon),
+                contentDescription = "Logo de SyncPOS",
                 modifier = Modifier
-                    .size(80.dp)
-                    .background(SenaGreen, RoundedCornerShape(20.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Storage,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(44.dp)
-                )
-            }
+                    .size(96.dp)
+                    .clip(RoundedCornerShape(24.dp))
+            )
 
             Spacer(Modifier.height(16.dp))
             Text("SyncPOS", style = MaterialTheme.typography.headlineMedium, color = DarkSlate)

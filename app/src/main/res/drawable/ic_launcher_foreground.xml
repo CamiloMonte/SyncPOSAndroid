@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Capa de adelante del icono adaptable: el logo de SyncPOS con margen.
+  Android recorta el icono con distintas formas (circulo, gota, cuadrado) segun la marca
+  del celular. Solo el centro (66 de 108 dp) se ve siempre, por eso se deja un margen.
+-->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/syncpos_icon"
+    android:inset="16%" />

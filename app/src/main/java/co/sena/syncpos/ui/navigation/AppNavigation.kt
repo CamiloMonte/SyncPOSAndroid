@@ -3,9 +3,12 @@ package co.sena.syncpos.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import co.sena.syncpos.ui.admin.inventory.ProductFormScreen
 import co.sena.syncpos.SyncPosApp
 import co.sena.syncpos.ui.admin.AdminShell
 import co.sena.syncpos.ui.history.HistoryScreen
@@ -18,6 +21,7 @@ object Routes {
     const val POS = "pos"           // cajero
     const val HISTORY = "historial" // cajero
     const val ADMIN = "admin"       // administrador (4 pestanas dentro)
+    const val PRODUCT_FORM = "producto" // formulario de producto; admite ?id=N para editar
 }
 
 // NavHost es el "contenedor" que muestra la pantalla de la ruta actual.
@@ -85,8 +89,26 @@ fun AppNavigation() {
                         popUpTo(Routes.ADMIN) { inclusive = true }
                     }
                 },
-                onNewProduct = { },
-                onEditProduct = { }
+                onNewProduct = { navController.navigate(Routes.PRODUCT_FORM) },
+                onEditProduct = { id -> navController.navigate("${Routes.PRODUCT_FORM}?id=$id") }
+            )
+        }
+        // Formulario de producto. "id" es un argumento OPCIONAL de la ruta:
+        //   "producto"       -> id = -1 (producto nuevo)
+        //   "producto?id=7"  -> editar el producto 7
+        // El ProductFormViewModel lee el id desde su SavedStateHandle.
+        composable(
+            route = "${Routes.PRODUCT_FORM}?id={id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.LongType
+                    defaultValue = -1L
+                }
+            )
+        ) {
+            ProductFormScreen(
+                container = container,
+                onBack = { navController.popBackStack() }
             )
         }
     }

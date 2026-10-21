@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.sena.syncpos.AppContainer
 import co.sena.syncpos.ui.admin.dashboard.DashboardScreen
+import co.sena.syncpos.ui.admin.inventory.InventoryScreen
 import co.sena.syncpos.ui.theme.BackgroundGray
 import co.sena.syncpos.ui.theme.BorderGray
 import co.sena.syncpos.ui.theme.SenaGreen
@@ -121,7 +122,14 @@ fun AdminShell(
                     },
                     onOpenSales = { selectedIndex = AdminTab.SALES.ordinal }
                 )
-                AdminTab.INVENTORY -> PlaceholderTab("Inventario", isOnline, logout)
+                AdminTab.INVENTORY -> InventoryScreen(
+                    container = container,
+                    isOnline = isOnline,
+                    lowStockRequest = lowStockRequest,
+                    onLogout = logout,
+                    onNewProduct = onNewProduct,
+                    onEditProduct = onEditProduct
+                )
                 AdminTab.REPORTS -> PlaceholderTab("Reportes", isOnline, logout)
                 AdminTab.SALES -> PlaceholderTab("Ventas", isOnline, logout)
             }

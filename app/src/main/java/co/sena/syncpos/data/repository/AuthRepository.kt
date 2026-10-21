@@ -46,6 +46,9 @@ class AuthRepository(
         session.clear()
     }
 
+    // true si el usuario que inicio sesion es administrador (rol guardado en la sesion).
+    val isAdmin: Boolean get() = session.role == "admin"
+
     // Cierra solo la sesion local (por ejemplo si fallo la descarga del catalogo).
     fun clearLocalSession() = session.clear()
 }

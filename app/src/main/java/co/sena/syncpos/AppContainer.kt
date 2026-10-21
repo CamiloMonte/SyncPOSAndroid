@@ -4,9 +4,11 @@ import android.content.Context
 import co.sena.syncpos.data.connectivity.ConnectivityObserver
 import co.sena.syncpos.data.local.AppDatabase
 import co.sena.syncpos.data.remote.ApiClient
+import co.sena.syncpos.data.repository.AdminRepository
 import co.sena.syncpos.data.repository.AuthRepository
 import co.sena.syncpos.data.repository.ProductRepository
 import co.sena.syncpos.data.repository.SalesRepository
+import co.sena.syncpos.data.session.SessionEvents
 import co.sena.syncpos.data.session.SessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,12 +24,18 @@ class AppContainer(context: Context) {
     val session = SessionManager(context)
     val connectivity = ConnectivityObserver(context)
 
+    // Avisos de sesion (por ejemplo "el token vencio") que la navegacion escucha.
+    val sessionEvents = SessionEvents()
+
     private val database: AppDatabase by lazy { AppDatabase.create(context) }
     private val api by lazy { ApiClient.create(session) }
 
     val authRepository by lazy { AuthRepository(api, session) }
     val productRepository by lazy { ProductRepository(api, database.productDao()) }
     val salesRepository by lazy { SalesRepository(database, api, session) }
+
+    // Repositorio del administrador: solo habla con la API (no usa Room, es en linea).
+    val adminRepository by lazy { AdminRepository(api, session, sessionEvents) }
 
     // Alcance de corrutinas ligado a la vida de la app (no a una pantalla).
     // SupervisorJob: si una tarea falla, no cancela a las demas.
@@ -40,7 +48,9 @@ class AppContainer(context: Context) {
             connectivity.isOnline
                 .filter { online -> online }
                 .collect {
-                    if (session.isLoggedIn) salesRepository.syncPending()
+                    // Solo el cajero tiene ventas offline; si hubiera pendientes de un cajero y
+                    // ahora entra un admin, NO se deben enviar con el token del admin.
+                    if (session.isLoggedIn && session.role != "admin") salesRepository.syncPending()
                 }
         }
     }

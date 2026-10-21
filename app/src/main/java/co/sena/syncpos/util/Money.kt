@@ -20,3 +20,11 @@ fun formatCop(amount: Double): String {
     val sign = if (rounded < 0) "-" else ""
     return "$sign\$ $grouped"
 }
+
+// Convierte el dinero que llega de la API a Double.
+// El servidor manda el dinero de dos formas distintas:
+//   - como TEXTO en ventas y productos: "48500.00"
+//   - como NUMERO en los reportes: 48500
+// En los dos casos el texto del valor se puede leer con toDoubleOrNull().
+// Si viene vacio o con basura se devuelve 0.0 en vez de romper la pantalla.
+fun parseMoney(text: String?): Double = text?.trim()?.toDoubleOrNull() ?: 0.0

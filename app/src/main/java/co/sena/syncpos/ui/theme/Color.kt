@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 // ARGB: 0xFF = opacidad total, luego rojo, verde y azul.
 val SenaGreen = Color(0xFF39A900)
 val SenaGreenSoft = Color(0xFFEAF6E0) // verde muy claro para cajas informativas
+val SenaGreenIndicator = Color(0xFFEEF8E6) // fondo del item seleccionado en la barra inferior del admin
 val DarkSlate = Color(0xFF0F172A)
 val BackgroundGray = Color(0xFFF8FAFC)
 val SurfaceWhite = Color(0xFFFFFFFF)

@@ -59,7 +59,16 @@ class LoginViewModel(
                 is LoginResult.Failure -> {
                     _uiState.update { it.copy(isLoading = false, error = result.message) }
                 }
-                LoginResult.Success -> downloadCatalogAfterLogin()
+                LoginResult.Success -> {
+                    if (authRepository.isAdmin) {
+                        // El administrador NO descarga el catalogo: sus pantallas son solo en
+                        // linea (leen los datos directo del servidor), no usan Room ni venden
+                        // sin conexion. Asi el ingreso es inmediato.
+                        _uiState.update { it.copy(isLoading = false, loggedIn = true) }
+                    } else {
+                        downloadCatalogAfterLogin()
+                    }
+                }
             }
         }
     }

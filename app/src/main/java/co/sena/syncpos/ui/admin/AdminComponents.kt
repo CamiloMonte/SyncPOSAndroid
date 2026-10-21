@@ -85,7 +85,7 @@ fun AdminTopBar(
 }
 
 // Pastilla de conexion del admin: verde "MySQL" (hay conexion con la base de datos del
-// servidor) o ambar "Sin conexión".
+// servidor) o ambar "Sin conexion".
 @Composable
 fun AdminStatusPill(isOnline: Boolean, modifier: Modifier = Modifier) {
     val background = if (isOnline) OnlineBg else OfflineBg

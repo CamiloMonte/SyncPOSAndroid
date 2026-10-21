@@ -37,7 +37,7 @@ object ReportFiles {
     fun writeCsv(context: Context, report: ProfitabilityDto, range: DateRange): File {
         val file = File(reportsDir(context), fileName(range, "csv"))
         // "﻿" es la marca BOM: le indica a Excel que el archivo es UTF-8 y asi las
-        // tildes ("Contribución") no salen como simbolos raros.
+        // tildes ("Contribucion") no salen como simbolos raros.
         file.writeText("﻿" + buildProfitabilityCsv(report.products), Charsets.UTF_8)
         return file
     }

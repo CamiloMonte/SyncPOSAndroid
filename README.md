@@ -26,12 +26,12 @@ Por línea de comandos (Windows, con el JDK de Android Studio):
 ## Arquitectura (MVVM simple)
 
 ```
-ui/        Pantallas Compose + ViewModel (StateFlow)   login, pos, history
+ui/        Pantallas Compose + ViewModel (StateFlow)   login, pos, history, admin
 domain/    Lógica pura: Cart, mapSyncResults, SyncSummary
 data/
   local/       Room: ProductEntity, LocalSaleEntity, LocalSaleItemEntity, DAOs
   remote/      Retrofit: SyncPosApi, DTOs, ApiClient
-  repository/  AuthRepository, ProductRepository, SalesRepository
+  repository/  AuthRepository, ProductRepository, SalesRepository, AdminRepository
   session/     SessionManager (SharedPreferences)
   connectivity/ConnectivityObserver (Flow<Boolean>)
 AppContainer   Inyección de dependencias manual (creado en SyncPosApp)
@@ -45,3 +45,18 @@ AppContainer   Inyección de dependencias manual (creado en SyncPosApp)
 4. `sincronizada` y `duplicada` se marcan como `SINCRONIZADA`; `rechazada` guarda el motivo.
 
 El servidor recalcula los precios: la app solo envía `producto_id` y `cantidad`.
+
+## Pantallas de administrador
+
+Usuario de prueba: `admin@syncpos.co` / `password`. Al iniciar sesión, la app mira el rol: `admin` entra al panel de administrador y `cajero` al punto de venta. Las pantallas de admin son **solo en línea** (leen los datos del servidor, no usan Room) y por eso el login del admin no descarga el catálogo. Si el servidor responde 401 (sesión vencida) la app vuelve sola al login.
+
+Barra inferior con 4 pestañas (`ui/admin/`):
+
+| Pestaña | Qué hace |
+|---|---|
+| Inicio | Dashboard: ventas de hoy, ganancia neta, inversión en inventario, alertas de stock (tocarla abre Inventario con "Stock bajo"), gráfico de ventas vs. ganancias de 7 días dibujado con `Canvas` y las últimas 5 ventas. |
+| Inventario | Búsqueda con retardo (debounce de 400 ms), filtros Todas / Stock bajo / categorías, lista paginada con "Cargar más", activar/desactivar productos con confirmación y formulario de producto (nuevo/editar) que muestra los errores 422 del servidor bajo cada campo. |
+| Reportes | Rentabilidad por Día / Semana / Mes / Rango (calendario), totales, ranking de productos y exportación a **CSV** y **PDF** que se comparte con la hoja de Android (`FileProvider`). |
+| Ventas | Historial de todas las ventas con búsqueda (N° de factura o cajero), filtro por método de pago, paginación y hoja inferior "Detalle de Factura" con opción de compartir como texto. |
+
+Archivos nuevos por capa: `data/remote/AdminDtos.kt` y `MoneySerializer.kt` (el dinero llega como número o como texto), `data/repository/AdminRepository.kt` (errores de red, 401, 403 y 422 ya traducidos), `domain/` (rango de fechas, CSV, factura, ganancia del producto) y una carpeta por pestaña en `ui/admin/`.

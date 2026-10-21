@@ -4,7 +4,8 @@ import co.sena.syncpos.data.connectivity.ConnectivityObserver
 import co.sena.syncpos.data.session.SessionManager
 
 // Esta carpeta (src/demo) solo se compila en el flavor "demo".
-// Paso intermedio: por ahora sigue usando la API real; la API falsa se conecta despues.
-@Suppress("UNUSED_PARAMETER")
+// Entrega la API FALSA con datos de ejemplo en memoria (ver FakeSyncPosApi). Tiene la
+// misma firma que la funcion de src/full, por eso AppContainer no necesita cambios.
+@Suppress("UNUSED_PARAMETER") // session no se usa: la API falsa no necesita token
 fun provideSyncPosApi(session: SessionManager, connectivity: ConnectivityObserver): SyncPosApi =
-    ApiClient.create(session)
+    FakeSyncPosApi(isOnline = { true })

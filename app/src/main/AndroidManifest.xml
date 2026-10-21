@@ -25,5 +25,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+          FileProvider: permite compartir los reportes (CSV/PDF) con otras apps mediante una
+          URI temporal, sin exponer el sistema de archivos. exported=false: solo se usa
+          desde esta app; grantUriPermissions=true: se puede dar permiso puntual de lectura
+          a la app que reciba el archivo. Las carpetas permitidas estan en res/xml/file_paths.xml.
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 </manifest>

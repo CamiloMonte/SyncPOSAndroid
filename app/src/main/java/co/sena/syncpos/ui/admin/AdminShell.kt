@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.sena.syncpos.AppContainer
 import co.sena.syncpos.ui.admin.dashboard.DashboardScreen
 import co.sena.syncpos.ui.admin.inventory.InventoryScreen
+import co.sena.syncpos.ui.admin.reports.ReportsScreen
 import co.sena.syncpos.ui.theme.BackgroundGray
 import co.sena.syncpos.ui.theme.BorderGray
 import co.sena.syncpos.ui.theme.SenaGreen
@@ -130,7 +131,7 @@ fun AdminShell(
                     onNewProduct = onNewProduct,
                     onEditProduct = onEditProduct
                 )
-                AdminTab.REPORTS -> PlaceholderTab("Reportes", isOnline, logout)
+                AdminTab.REPORTS -> ReportsScreen(container, isOnline, logout)
                 AdminTab.SALES -> PlaceholderTab("Ventas", isOnline, logout)
             }
         }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Le dice al FileProvider QUE carpetas privadas de la app puede compartir con otras apps.
+  <cache-path> = la carpeta cacheDir de la app; path="reports/" limita el permiso a la
+  subcarpeta donde se crean los reportes (CSV y PDF). Nada mas queda expuesto.
+-->
+<paths>
+    <cache-path name="reports" path="reports/" />
+</paths>

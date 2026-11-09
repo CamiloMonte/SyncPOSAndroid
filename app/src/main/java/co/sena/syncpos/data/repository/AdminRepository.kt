@@ -58,7 +58,8 @@ class AdminRepository(
     val productsChanged: SharedFlow<Unit> = _productsChanged.asSharedFlow()
 
     // ---------- Dashboard ----------
-    suspend fun daySummary(): ApiResult<DaySummaryDto> = call { api.daySummary() }
+    // LocalDate.now() usa la zona horaria del celular: es el "hoy" que ve el administrador
+    suspend fun daySummary(): ApiResult<DaySummaryDto> = call { api.daySummary(LocalDate.now().toString()) }
 
     // ---------- Inventario ----------
     suspend fun products(

@@ -37,8 +37,10 @@ interface SyncPosApi {
     // ---------- Endpoints de ADMINISTRADOR (solo en linea) ----------
 
     // Dashboard: ventas, ganancia, inventario, alertas, ultimas ventas y ultimos 7 dias.
+    // "fecha" es el dia LOCAL del celular ("2026-11-04"): asi "hoy" no depende de la zona
+    // horaria del servidor (DEF-06: despues de las 7 p. m. el dashboard salia en $0).
     @GET("reportes/resumen-dia")
-    suspend fun daySummary(): DaySummaryDto
+    suspend fun daySummary(@Query("fecha") date: String): DaySummaryDto
 
     // Inventario paginado (20 por pagina). Los parametros null NO se envian.
     // lowStock = 1 filtra los productos con stock <= stock minimo.

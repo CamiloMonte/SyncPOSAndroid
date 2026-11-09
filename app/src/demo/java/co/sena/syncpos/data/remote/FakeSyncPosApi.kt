@@ -157,8 +157,9 @@ class FakeSyncPosApi(
         SyncResponse(body.ventas.map { registerSale(it) })
     }
 
-    override suspend fun daySummary(): DaySummaryDto = respond {
-        val today = LocalDate.now(clock)
+    override suspend fun daySummary(date: String): DaySummaryDto = respond {
+        // Igual que Laravel: el dia consultado lo decide el celular con el parametro "fecha"
+        val today = LocalDate.parse(date)
         val todaySales = sales.filter { it.date() == today }
         val active = products.filter { it.active }
         DaySummaryDto(

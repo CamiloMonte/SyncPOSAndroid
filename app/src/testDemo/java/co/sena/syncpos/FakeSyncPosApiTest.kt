@@ -149,7 +149,7 @@ class FakeSyncPosApiTest {
     @Test
     fun daySummary_matchesSalesOfToday() = runTest {
         val api = api()
-        val summary = api.daySummary()
+        val summary = api.daySummary(LocalDate.now(clock).toString())
         val todays = allSales(api).filter {
             OffsetDateTime.parse(it.soldAt!!).atZoneSameInstant(zone).toLocalDate() == today
         }
@@ -236,7 +236,7 @@ class FakeSyncPosApiTest {
         val api = api(online = false)
         assertEquals("admin", api.login(LoginRequest("admin@syncpos.co", "x")).user.rol)
         try {
-            api.daySummary()
+            api.daySummary(LocalDate.now(clock).toString())
             fail("Debia lanzar IOException")
         } catch (e: IOException) {
             assertEquals("Sin conexion (demo)", e.message)
